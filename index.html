@@ -3,154 +3,147 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>🎹 Neon Piano</title>
+<title>🎹 Qwerty Piano</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet"/>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+*{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-html,body{
-  width:100%;height:100%;
+html, body {
+  width:100%; height:100%;
   background:#05050f;
-  font-family:'Orbitron',monospace;
   overflow:hidden;
+  font-family:'Orbitron', monospace;
   touch-action:none;
 }
 
-/* ── CANVASES ── */
-#bgCanvas,#fxCanvas{
-  position:fixed;inset:0;
-  width:100%;height:100%;
+canvas {
+  position:fixed; inset:0;
+  width:100%; height:100%;
   pointer-events:none;
 }
-#bgCanvas{z-index:0;}
-#fxCanvas{z-index:30;}
+#bgCanvas { z-index:1; }
+#fxCanvas { z-index:5; }
 
-/* ── LAYOUT ── */
-#app{
-  position:fixed;inset:0;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  z-index:10;
-  padding:12px 8px;
-  gap:10px;
+#app {
+  position:fixed; inset:0; z-index:10;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:10px 8px; gap:8px;
 }
 
-/* ── TITLE ── */
-#title{
-  font-size:clamp(1.1rem,5vw,2.4rem);
+/* TITLE */
+#title {
+  font-size:clamp(1rem,5vw,2.4rem);
   font-weight:900;
   background:linear-gradient(90deg,#ff6ef7,#6ef9ff,#ffe56e,#6effa0,#ff6ef7);
   background-size:400% 100%;
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:gs 4s linear infinite;
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  animation:colorFlow 4s linear infinite;
   letter-spacing:0.1em;
-  filter:drop-shadow(0 0 14px rgba(110,249,255,0.5));
-  white-space:nowrap;
-  flex-shrink:0;
+  filter:drop-shadow(0 0 14px rgba(110,249,255,0.6));
+  white-space:nowrap; flex-shrink:0;
 }
-@keyframes gs{0%{background-position:0%}100%{background-position:400%}}
+@keyframes colorFlow { 0%{background-position:0%} 100%{background-position:400%} }
 
-/* ── NOTE BADGE ── */
-#badge{
-  font-size:clamp(0.85rem,3.5vw,1.3rem);
-  font-weight:700;
-  letter-spacing:0.12em;
-  padding:5px 22px;
-  border-radius:40px;
-  border:2px solid transparent;
-  color:#fff;
-  opacity:0;
-  transition:opacity 0.1s;
-  flex-shrink:0;
-  white-space:nowrap;
+/* BADGE */
+#badge {
+  font-size:clamp(0.8rem,3.5vw,1.25rem);
+  font-weight:700; letter-spacing:0.12em;
+  padding:5px 22px; border-radius:40px;
+  border:2px solid transparent; color:#fff;
+  opacity:0; transition:opacity 0.1s;
+  flex-shrink:0; white-space:nowrap; min-width:120px; text-align:center;
 }
-#badge.show{opacity:1;animation:pop 0.3s cubic-bezier(.34,1.56,.64,1);}
-@keyframes pop{0%{transform:scale(0.6) translateY(6px);opacity:0;}100%{transform:scale(1);opacity:1;}}
+#badge.show { opacity:1; animation:popUp 0.3s cubic-bezier(.34,1.56,.64,1); }
+@keyframes popUp { 0%{transform:scale(0.6) translateY(6px);opacity:0;} 100%{transform:scale(1);opacity:1;} }
 
-/* ── PIANO SHELL ── */
-#shell{
+/* SHELL */
+#shell {
   position:relative;
   background:linear-gradient(160deg,#0d0d22,#060610);
   border-radius:14px 14px 20px 20px;
-  padding:14px 14px 20px;
+  padding:12px 12px 18px;
   flex-shrink:0;
-  /* shell width will match piano width dynamically */
+  box-shadow:0 30px 70px rgba(0,0,0,0.85), inset 0 1px 0 rgba(110,249,255,0.1);
 }
-#shell::before{
-  content:'';position:absolute;inset:-1px;
+#shell::before {
+  content:''; position:absolute; inset:-1px;
   border-radius:14px 14px 20px 20px;
   background:linear-gradient(90deg,#ff6ef7,#6ef9ff,#ffe56e,#6effa0,#ff6ef7);
-  background-size:400% 100%;animation:gs 5s linear infinite;
-  opacity:0.22;z-index:-1;filter:blur(3px);
+  background-size:400% 100%; animation:colorFlow 5s linear infinite;
+  opacity:0.2; z-index:-1; filter:blur(3px);
 }
-.topbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-.topbar .ln{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(110,249,255,0.25));}
-.topbar .ln:last-child{background:linear-gradient(270deg,transparent,rgba(110,249,255,0.25));}
-.topbar span{font-size:0.52rem;letter-spacing:0.45em;color:rgba(110,249,255,0.3);text-transform:uppercase;white-space:nowrap;}
 
-/* ── PIANO KEYS CONTAINER ── */
-#pianoScroll{
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  /* hide scrollbar but allow scrolling */
+.topbar { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.topbar .ln { flex:1; height:1px; background:linear-gradient(90deg,transparent,rgba(110,249,255,0.25)); }
+.topbar .ln.r { background:linear-gradient(270deg,transparent,rgba(110,249,255,0.25)); }
+.topbar span { font-size:0.5rem; letter-spacing:0.45em; color:rgba(110,249,255,0.3); text-transform:uppercase; white-space:nowrap; }
+
+/* PIANO WRAPPER — scrollable on very small screens */
+#pianoWrap {
+  overflow-x:auto; overflow-y:hidden;
   scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
 }
-#pianoScroll::-webkit-scrollbar{display:none;}
+#pianoWrap::-webkit-scrollbar { display:none; }
 
-#piano{
+/* KEY CONTAINER */
+#piano {
+  position:relative;
   display:flex;
-  position:relative;
   user-select:none;
-  /* height = white key height; will be set by JS */
+  /* width & height set by JS */
 }
 
-/* ── KEYS ── (sizes set via CSS vars, overridden by JS on small screens) */
-.key{
-  position:relative;
-  width:var(--ww,42px);
-  height:var(--wh,170px);
-  background:linear-gradient(180deg,#eeeeff,#d8d8f0 55%,#c0c0e0);
+/* WHITE KEY */
+.wkey {
+  position:relative; flex-shrink:0;
+  background:linear-gradient(180deg,#eeeeff,#d8d8f2 55%,#c0c0e0);
   border:1px solid rgba(100,60,200,0.3);
+  border-right:none;
   border-radius:0 0 7px 7px;
   cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
   padding-bottom:8px;
-  transition:transform 0.05s,box-shadow 0.05s,background 0.05s;
-  box-shadow:inset 0 -4px 8px rgba(0,0,0,0.1),0 6px 12px rgba(0,0,0,0.4),2px 0 0 rgba(0,0,0,0.07);
-  z-index:1;
-  flex-shrink:0;
+  box-shadow:inset 0 -4px 8px rgba(0,0,0,0.1), 0 6px 12px rgba(0,0,0,0.4);
+  z-index:1; overflow:hidden;
+  transition:transform 0.05s, box-shadow 0.05s;
 }
-.key:not(:first-child){border-left:none;}
-.key .nn{font-size:var(--nf,0.42rem);color:rgba(60,30,140,0.4);margin-bottom:1px;letter-spacing:0.02em;}
-.key .kb{font-size:var(--kf,0.62rem);font-weight:700;color:rgba(40,20,110,0.5);}
-.key.active{transform:translateY(4px);box-shadow:inset 0 2px 5px rgba(0,0,0,0.25),0 2px 4px rgba(0,0,0,0.4);}
-.key.active .kb,.key.active .nn{color:rgba(10,5,30,0.9);}
+.wkey:last-of-type { border-right:1px solid rgba(100,60,200,0.3); }
+.wkey.on {
+  transform:translateY(4px);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.4);
+}
 
-.key.black{
-  position:absolute;
-  width:var(--bw,26px);
-  height:var(--bh,108px);
-  background:linear-gradient(180deg,#1a1030,#0d0820 70%,#06040f);
+/* BLACK KEY */
+.bkey {
+  position:absolute; top:0; flex-shrink:0;
+  background:linear-gradient(180deg,#1a1030,#0d0820 70%,#050310);
   border:1px solid #040210;
   border-radius:0 0 5px 5px;
-  z-index:2;top:0;
-  padding-bottom:7px;
-  box-shadow:0 8px 18px rgba(0,0,0,0.75),inset 0 -2px 4px rgba(255,255,255,0.03),3px 3px 0 rgba(0,0,0,0.5);
+  cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+  padding-bottom:6px;
+  box-shadow:0 8px 18px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(255,255,255,0.03), 3px 3px 0 rgba(0,0,0,0.5);
+  z-index:2; overflow:hidden;
+  transition:transform 0.05s, box-shadow 0.05s;
 }
-.key.black .nn{color:rgba(150,100,255,0.3);font-size:var(--bnf,0.38rem);}
-.key.black .kb{color:rgba(140,90,255,0.42);font-size:var(--bkf,0.52rem);}
-.key.black.active{transform:translateY(2px);box-shadow:inset 0 2px 5px rgba(0,0,0,0.5),0 4px 8px rgba(0,0,0,0.5);}
+.bkey.on {
+  transform:translateY(2px);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.5);
+}
 
-/* ── HINT ── */
-#hint{
-  font-size:clamp(0.45rem,2vw,0.6rem);
-  letter-spacing:0.2em;
-  color:rgba(150,170,255,0.2);
-  text-transform:uppercase;
-  text-align:center;
-  line-height:1.9;
-  flex-shrink:0;
+.nn { color:rgba(60,30,140,0.4); }
+.kb { font-weight:700; color:rgba(40,20,110,0.5); }
+.bkey .nn { color:rgba(150,100,255,0.3); }
+.bkey .kb { color:rgba(140,90,255,0.42); }
+
+/* HINT */
+#hint {
+  font-size:clamp(0.4rem,1.8vw,0.58rem);
+  letter-spacing:0.18em; color:rgba(140,160,255,0.2);
+  text-transform:uppercase; text-align:center;
+  line-height:2; flex-shrink:0;
 }
 </style>
 </head>
@@ -160,412 +153,488 @@ html,body{
 <canvas id="fxCanvas"></canvas>
 
 <div id="app">
-  <div id="title">✦ QWERTY PIANO ✦</div>
+  <div id="title">✦ NEON PIANO ✦</div>
   <div id="badge">—</div>
   <div id="shell">
     <div class="topbar">
-      <div class="ln"></div><span>Chromatic Grand</span><div class="ln"></div>
+      <div class="ln"></div><span>Chromatic Grand</span><div class="ln r"></div>
     </div>
-    <div id="pianoScroll">
+    <div id="pianoWrap">
       <div id="piano"></div>
     </div>
   </div>
   <div id="hint">
-    White: A S D F G H J K L Z X C V B N M<br>
-    Black: Q W E R T Y U I O P
+    White: A S D F G H J K L Z X C V B N M &nbsp;·&nbsp; Black: Q W E R T Y U I O P
   </div>
 </div>
 
 <script>
-'use strict';
+// ═══════════════════════════════════════════════
+//  1. CANVAS SETUP  (declared first so nothing is undefined)
+// ═══════════════════════════════════════════════
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx    = bgCanvas.getContext('2d');
+const fxCanvas = document.getElementById('fxCanvas');
+const fxCtx    = fxCanvas.getContext('2d');
 
-// ══════════════════════════════════════════════════════
-//  DATA
-// ══════════════════════════════════════════════════════
-const WHITE_KEYS=[
-  {k:'A',n:'C4', f:261.63},{k:'S',n:'D4', f:293.66},{k:'D',n:'E4', f:329.63},
-  {k:'F',n:'F4', f:349.23},{k:'G',n:'G4', f:392.00},{k:'H',n:'A4', f:440.00},
-  {k:'J',n:'B4', f:493.88},{k:'K',n:'C5', f:523.25},{k:'L',n:'D5', f:587.33},
-  {k:'Z',n:'E5', f:659.25},{k:'X',n:'F5', f:698.46},{k:'C',n:'G5', f:783.99},
-  {k:'V',n:'A5', f:880.00},{k:'B',n:'B5', f:987.77},{k:'N',n:'C6', f:1046.50},
-  {k:'M',n:'D6', f:1174.66},
-];
-const BLACK_KEYS=[
-  {k:'Q',n:'C#4',f:277.18,a:0},{k:'W',n:'D#4',f:311.13,a:1},
-  {k:'E',n:'F#4',f:369.99,a:3},{k:'R',n:'G#4',f:415.30,a:4},
-  {k:'T',n:'A#4',f:466.16,a:5},{k:'Y',n:'D#5',f:622.25,a:9},
-  {k:'U',n:'F#5',f:739.99,a:10},{k:'I',n:'G#5',f:830.61,a:12},
-  {k:'O',n:'A#5',f:932.33,a:13},{k:'P',n:'C#6',f:1108.73,a:14},
-];
-const COLORS={
-  A:'#ff2dff',S:'#d500f9',D:'#7c4dff',F:'#00b0ff',G:'#00e5ff',
-  H:'#00ff9f',J:'#76ff03',K:'#ffe600',L:'#ff9100',Z:'#ff3d00',
-  X:'#ff1744',C:'#f50057',V:'#e040fb',B:'#40c4ff',N:'#18ffff',M:'#69ff47',
-  Q:'#ff6ec7',W:'#ff9cee',E:'#b388ff',R:'#82b1ff',T:'#80d8ff',
-  Y:'#a7ffeb',U:'#ccff90',I:'#ffd180',O:'#ff9e80',P:'#ea80fc',
-};
-
-// ══════════════════════════════════════════════════════
-//  RESPONSIVE SIZING
-//  Fit all 16 white keys within the visible screen width
-// ══════════════════════════════════════════════════════
-function calcSizes(){
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const availW = vw - 28;          // shell padding 14px each side
-  const maxWW = 48;
-  const minWW = 22;
-  let ww = Math.floor(availW / 16);
-  ww = Math.max(minWW, Math.min(maxWW, ww));
-
-  // Key heights — proportional to width
-  const wh = Math.round(ww * 4.0);
-  const bw = Math.round(ww * 0.60);
-  const bh = Math.round(wh * 0.62);
-
-  // Font sizes
-  const kf = Math.max(0.38, Math.min(0.7, ww * 0.016)) + 'rem';
-  const nf = Math.max(0.32, Math.min(0.52, ww * 0.012)) + 'rem';
-
-  return {ww, wh, bw, bh, kf, nf};
+function resizeCanvases() {
+  bgCanvas.width  = fxCanvas.width  = window.innerWidth;
+  bgCanvas.height = fxCanvas.height = window.innerHeight;
 }
+resizeCanvases();
+window.addEventListener('resize', () => { resizeCanvases(); initStars(); buildPiano(); });
 
-function applySizes(sz){
-  const r = document.documentElement.style;
-  r.setProperty('--ww', sz.ww+'px');
-  r.setProperty('--wh', sz.wh+'px');
-  r.setProperty('--bw', sz.bw+'px');
-  r.setProperty('--bh', sz.bh+'px');
-  r.setProperty('--kf',  sz.kf);
-  r.setProperty('--nf',  sz.nf);
-  r.setProperty('--bkf', sz.kf);
-  r.setProperty('--bnf', sz.nf);
-  return sz;
-}
-
-// ══════════════════════════════════════════════════════
-//  BUILD PIANO DOM
-// ══════════════════════════════════════════════════════
-const pianoEl = document.getElementById('piano');
-const keyMap  = {};
-
-function buildPiano(sz){
-  pianoEl.innerHTML = '';
-  pianoEl.style.height = sz.wh + 'px';
-  pianoEl.style.width  = (sz.ww * WHITE_KEYS.length) + 'px';
-
-  WHITE_KEYS.forEach(({k,n,f})=>{
-    const el = document.createElement('div');
-    el.className = 'key white';
-    el.dataset.key = k;
-    el.innerHTML = `<span class="nn">${n}</span><span class="kb">${k}</span>`;
-    pianoEl.appendChild(el);
-    keyMap[k] = {el, f, n, c:COLORS[k], type:'white'};
-  });
-
-  BLACK_KEYS.forEach(({k,n,f,a})=>{
-    const el = document.createElement('div');
-    el.className = 'key black';
-    el.dataset.key = k;
-    el.innerHTML = `<span class="nn">${n}</span><span class="kb">${k}</span>`;
-    el.style.left = (a * sz.ww + sz.ww - sz.bw/2) + 'px';
-    pianoEl.appendChild(el);
-    keyMap[k] = {el, f, n, c:COLORS[k], type:'black'};
-  });
-
-  // Attach touch/mouse events
-  Object.entries(keyMap).forEach(([lt,{el}])=>{
-    el.addEventListener('mousedown',  e=>{e.preventDefault();trigger(lt);});
-    el.addEventListener('mouseup',    ()=>release(lt));
-    el.addEventListener('mouseleave', ()=>release(lt));
-    el.addEventListener('touchstart', e=>{e.preventDefault();trigger(lt);},{passive:false});
-    el.addEventListener('touchend',   e=>{e.preventDefault();release(lt);},{passive:false});
-    el.addEventListener('touchcancel',()=>release(lt));
-  });
-}
-
-let SZ = applySizes(calcSizes());
-buildPiano(SZ);
-
-window.addEventListener('resize', ()=>{
-  SZ = applySizes(calcSizes());
-  buildPiano(SZ);
-  resizeCanvases();
-});
-
-// ══════════════════════════════════════════════════════
-//  BACKGROUND STARFIELD
-// ══════════════════════════════════════════════════════
-const bgC = document.getElementById('bgCanvas');
-const bgX = bgC.getContext('2d');
+// ═══════════════════════════════════════════════
+//  2. STARFIELD
+// ═══════════════════════════════════════════════
 let stars = [];
+const STAR_COLS = ['#6ef9ff','#ff6ef7','#ffe56e','#6effa0','#ffffff'];
 
-function resizeCanvases(){
-  bgC.width  = fxC.width  = window.innerWidth;
-  bgC.height = fxC.height = window.innerHeight;
-  initStars();
-}
-
-function initStars(){
-  stars = Array.from({length:120}, ()=>({
-    x: Math.random()*bgC.width,
-    y: Math.random()*bgC.height,
-    r: Math.random()*1.3+0.2,
-    phase: Math.random()*Math.PI*2,
-    speed: Math.random()*0.012+0.004,
-    col: ['#6ef9ff','#ff6ef7','#ffe56e','#6effa0','#ffffff'][0|Math.random()*5]
+function initStars() {
+  stars = Array.from({ length: 120 }, () => ({
+    x: Math.random() * bgCanvas.width,
+    y: Math.random() * bgCanvas.height,
+    r: Math.random() * 1.3 + 0.2,
+    phase: Math.random() * Math.PI * 2,
+    speed: Math.random() * 0.012 + 0.004,
+    col: STAR_COLS[Math.floor(Math.random() * STAR_COLS.length)]
   }));
 }
+initStars();
 
-function drawBg(){
-  bgX.clearRect(0,0,bgC.width,bgC.height);
-  stars.forEach(s=>{
+function drawBg() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  stars.forEach(s => {
     s.phase += s.speed;
-    const a = (Math.sin(s.phase)*0.5+0.5)*0.75;
-    bgX.beginPath();bgX.arc(s.x,s.y,s.r,0,Math.PI*2);
-    bgX.fillStyle = s.col + Math.round(a*255).toString(16).padStart(2,'0');
-    bgX.fill();
+    const alpha = (Math.sin(s.phase) * 0.5 + 0.5) * 0.75;
+    const hex   = Math.round(alpha * 255).toString(16).padStart(2, '0');
+    bgCtx.beginPath();
+    bgCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    bgCtx.fillStyle = s.col + hex;
+    bgCtx.fill();
   });
   requestAnimationFrame(drawBg);
 }
-resizeCanvases();
 drawBg();
 
-// ══════════════════════════════════════════════════════
-//  FX CANVAS — glitter + letter rain
-// ══════════════════════════════════════════════════════
-const fxC = document.getElementById('fxCanvas');
-const fxX = fxC.getContext('2d');
+// ═══════════════════════════════════════════════
+//  3. PARTICLE FX
+// ═══════════════════════════════════════════════
 let parts = [];
 
-function spawnFX(x, y, color, letter){
-  // 50 glitter particles
-  for(let i=0;i<50;i++){
-    const a=Math.random()*Math.PI*2, sp=1.5+Math.random()*8;
+function spawnFX(x, y, color, letter) {
+  // Glitter burst
+  for (let i = 0; i < 50; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 1.5 + Math.random() * 8;
     parts.push({
       t:'g', x, y,
-      vx:Math.cos(a)*sp, vy:Math.sin(a)*sp-2.5,
-      gv:0.2, alpha:1, dec:0.013+Math.random()*0.018,
-      color, r:2+Math.random()*5,
-      star:Math.random()>0.4,
-      rot:Math.random()*Math.PI*2, rs:(Math.random()-.5)*0.3
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2.5,
+      gv: 0.2, alpha: 1,
+      dec: 0.013 + Math.random() * 0.018,
+      color, r: 2 + Math.random() * 5,
+      isStar: Math.random() > 0.4,
+      rot: Math.random() * Math.PI * 2,
+      rs: (Math.random() - 0.5) * 0.3
     });
   }
-  // 14 letter rain drops
-  for(let i=0;i<14;i++){
+  // Letter rain
+  for (let i = 0; i < 14; i++) {
     parts.push({
       t:'lr', letter,
-      x: x+(Math.random()-.5)*130,
+      x: x + (Math.random() - 0.5) * 130,
       y: y,
-      vy: -(4+Math.random()*8),
-      gv: 0.28, alpha:1,
-      dec: 0.01+Math.random()*0.013,
-      color, sz: 11+Math.random()*22,
-      drift:(Math.random()-.5)*1.6
+      vy: -(4 + Math.random() * 8),
+      gv: 0.28, alpha: 1,
+      dec: 0.01 + Math.random() * 0.013,
+      color,
+      sz: 11 + Math.random() * 22,
+      drift: (Math.random() - 0.5) * 1.6
     });
   }
-  // 6 exploding letters radial
-  for(let i=0;i<6;i++){
-    const a=(Math.PI*2/6)*i, d=40+Math.random()*65;
+  // Exploding letters radial
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI * 2 / 6) * i;
+    const d = 40 + Math.random() * 65;
     parts.push({
       t:'el', letter, x, y,
-      tx:x+Math.cos(a)*d, ty:y+Math.sin(a)*d,
-      prog:0, spd:0.04+Math.random()*0.03,
-      alpha:1, dec:0.024, color, sz:16+Math.random()*16
+      tx: x + Math.cos(a) * d,
+      ty: y + Math.sin(a) * d,
+      prog: 0, spd: 0.04 + Math.random() * 0.03,
+      alpha: 1, dec: 0.024, color,
+      sz: 16 + Math.random() * 16
     });
   }
-  // 2 ripple rings
-  parts.push({t:'rip',x,y,r:0,spd:7,alpha:0.8,dec:0.024,color,lw:2.5});
-  parts.push({t:'rip',x,y,r:0,spd:12,alpha:0.5,dec:0.05,color:'#fff',lw:2});
-  // Subtle screen flash
-  parts.push({t:'fl',alpha:0.14,dec:0.07,color});
+  // Ripple rings
+  parts.push({ t:'rip', x, y, r:0, spd:7,  alpha:0.8, dec:0.024, color,    lw:2.5 });
+  parts.push({ t:'rip', x, y, r:0, spd:12, alpha:0.5, dec:0.05,  color:'#fff', lw:2 });
+  // Screen flash
+  parts.push({ t:'fl', alpha:0.14, dec:0.07, color });
 }
 
-function drawStarShape(ctx,x,y,r,rot){
-  ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.beginPath();
-  for(let i=0;i<5;i++){
-    const a=(i*4*Math.PI/5)-Math.PI/2, ia=(i*4*Math.PI/5+Math.PI*2/5)-Math.PI/2;
-    i===0?ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r):ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);
-    ctx.lineTo(Math.cos(ia)*r*.4,Math.sin(ia)*r*.4);
+function drawStarShape(ctx, x, y, r, rot) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.beginPath();
+  for (let i = 0; i < 5; i++) {
+    const a  = (i * 4 * Math.PI / 5) - Math.PI / 2;
+    const ia = (i * 4 * Math.PI / 5 + Math.PI * 2 / 5) - Math.PI / 2;
+    i === 0
+      ? ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r)
+      : ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+    ctx.lineTo(Math.cos(ia) * r * 0.4, Math.sin(ia) * r * 0.4);
   }
-  ctx.closePath();ctx.restore();
+  ctx.closePath(); ctx.restore();
 }
 
-function animFX(){
-  fxX.clearRect(0,0,fxC.width,fxC.height);
-  parts = parts.filter(p=>p.alpha>0.01);
+function animFX() {
+  fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+  parts = parts.filter(p => p.alpha > 0.01);
 
-  parts.forEach(p=>{
-    fxX.save();
-    fxX.globalAlpha = Math.max(0,p.alpha);
+  parts.forEach(p => {
+    fxCtx.save();
+    fxCtx.globalAlpha = Math.max(0, p.alpha);
 
-    if(p.t==='g'){
-      p.vx*=0.97; p.vy+=p.gv; p.x+=p.vx; p.y+=p.vy;
-      p.rot+=p.rs; p.alpha-=p.dec;
-      // glow halo
-      const grd=fxX.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);
-      grd.addColorStop(0,p.color+'bb');grd.addColorStop(1,p.color+'00');
-      fxX.fillStyle=grd;fxX.beginPath();fxX.arc(p.x,p.y,p.r*4,0,Math.PI*2);fxX.fill();
-      fxX.fillStyle=p.color;fxX.shadowColor=p.color;fxX.shadowBlur=9;
-      if(p.star){drawStarShape(fxX,p.x,p.y,p.r,p.rot);fxX.fill();}
-      else{fxX.beginPath();fxX.arc(p.x,p.y,p.r,0,Math.PI*2);fxX.fill();}
+    if (p.t === 'g') {
+      p.vx *= 0.97; p.vy += p.gv;
+      p.x += p.vx;  p.y += p.vy;
+      p.rot += p.rs; p.alpha -= p.dec;
+      const grd = fxCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+      grd.addColorStop(0, p.color + 'bb'); grd.addColorStop(1, p.color + '00');
+      fxCtx.fillStyle = grd;
+      fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2); fxCtx.fill();
+      fxCtx.fillStyle = p.color;
+      fxCtx.shadowColor = p.color; fxCtx.shadowBlur = 9;
+      if (p.isStar) { drawStarShape(fxCtx, p.x, p.y, p.r, p.rot); fxCtx.fill(); }
+      else { fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2); fxCtx.fill(); }
     }
 
-    else if(p.t==='lr'){
-      p.vy+=p.gv; p.x+=p.drift; p.y+=p.vy; p.alpha-=p.dec;
-      fxX.font=`900 ${p.sz}px Orbitron,monospace`;
-      fxX.fillStyle=p.color;fxX.shadowColor=p.color;fxX.shadowBlur=13;
-      fxX.textAlign='center';fxX.textBaseline='middle';
-      fxX.fillText(p.letter,p.x,p.y);
+    else if (p.t === 'lr') {
+      p.vy += p.gv; p.x += p.drift; p.y += p.vy; p.alpha -= p.dec;
+      fxCtx.font = `900 ${p.sz}px Orbitron, monospace`;
+      fxCtx.fillStyle = p.color;
+      fxCtx.shadowColor = p.color; fxCtx.shadowBlur = 13;
+      fxCtx.textAlign = 'center'; fxCtx.textBaseline = 'middle';
+      fxCtx.fillText(p.letter, p.x, p.y);
     }
 
-    else if(p.t==='el'){
-      p.prog+=p.spd; if(p.prog>=1){p.alpha=0;fxX.restore();return;}
-      const e=1-Math.pow(1-p.prog,3);
-      const cx=p.x+(p.tx-p.x)*e, cy=p.y+(p.ty-p.y)*e;
-      p.alpha=Math.max(0,1-p.prog*1.6);
-      fxX.font=`900 ${p.sz}px Orbitron,monospace`;
-      fxX.fillStyle=p.color;fxX.shadowColor=p.color;fxX.shadowBlur=20;
-      fxX.textAlign='center';fxX.textBaseline='middle';fxX.fillText(p.letter,cx,cy);
+    else if (p.t === 'el') {
+      p.prog += p.spd;
+      if (p.prog >= 1) { p.alpha = 0; fxCtx.restore(); return; }
+      const ease = 1 - Math.pow(1 - p.prog, 3);
+      const cx = p.x + (p.tx - p.x) * ease;
+      const cy = p.y + (p.ty - p.y) * ease;
+      p.alpha = Math.max(0, 1 - p.prog * 1.6);
+      fxCtx.font = `900 ${p.sz}px Orbitron, monospace`;
+      fxCtx.fillStyle = p.color;
+      fxCtx.shadowColor = p.color; fxCtx.shadowBlur = 20;
+      fxCtx.textAlign = 'center'; fxCtx.textBaseline = 'middle';
+      fxCtx.fillText(p.letter, cx, cy);
     }
 
-    else if(p.t==='rip'){
-      p.r+=p.spd; p.alpha-=p.dec;
-      fxX.beginPath();fxX.arc(p.x,p.y,p.r,0,Math.PI*2);
-      fxX.strokeStyle=p.color;fxX.lineWidth=p.lw;
-      fxX.shadowColor=p.color;fxX.shadowBlur=16;fxX.stroke();
+    else if (p.t === 'rip') {
+      p.r += p.spd; p.alpha -= p.dec;
+      fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      fxCtx.strokeStyle = p.color; fxCtx.lineWidth = p.lw;
+      fxCtx.shadowColor = p.color; fxCtx.shadowBlur = 16;
+      fxCtx.stroke();
     }
 
-    else if(p.t==='fl'){
-      p.alpha-=p.dec;
-      fxX.fillStyle=p.color;fxX.fillRect(0,0,fxC.width,fxC.height);
+    else if (p.t === 'fl') {
+      p.alpha -= p.dec;
+      fxCtx.fillStyle = p.color;
+      fxCtx.fillRect(0, 0, fxCanvas.width, fxCanvas.height);
     }
 
-    fxX.restore();
+    fxCtx.restore();
   });
   requestAnimationFrame(animFX);
 }
 animFX();
 
-// ══════════════════════════════════════════════════════
-//  AUDIO
-// ══════════════════════════════════════════════════════
-let actx = null;
-function getACtx(){
-  if(!actx) actx=new(window.AudioContext||window.webkitAudioContext)();
-  if(actx.state==='suspended') actx.resume();
-  return actx;
-}
-function playNote(freq){
-  const ctx=getACtx(), now=ctx.currentTime;
-  const o1=ctx.createOscillator(),o2=ctx.createOscillator(),o3=ctx.createOscillator();
-  o1.type='triangle';o2.type='sine';o3.type='sine';
-  o1.frequency.setValueAtTime(freq,now);
-  o2.frequency.setValueAtTime(freq*2,now);
-  o3.frequency.setValueAtTime(freq*3.01,now);
-  const g1=ctx.createGain(),g2=ctx.createGain(),g3=ctx.createGain(),gm=ctx.createGain();
-  g1.gain.setValueAtTime(0,now);g1.gain.linearRampToValueAtTime(0.5,now+.006);
-  g1.gain.exponentialRampToValueAtTime(.13,now+.3);g1.gain.exponentialRampToValueAtTime(.001,now+2);
-  g2.gain.setValueAtTime(0,now);g2.gain.linearRampToValueAtTime(0.18,now+.006);
-  g2.gain.exponentialRampToValueAtTime(.03,now+.25);g2.gain.exponentialRampToValueAtTime(.001,now+1.3);
-  g3.gain.setValueAtTime(0,now);g3.gain.linearRampToValueAtTime(.07,now+.006);
-  g3.gain.exponentialRampToValueAtTime(.001,now+.5);
-  gm.gain.setValueAtTime(0.65,now);
-  const comp=ctx.createDynamicsCompressor();
-  comp.threshold.value=-18;comp.knee.value=10;comp.ratio.value=4;
-  [o1,o2,o3].forEach((o,i)=>{o.connect([g1,g2,g3][i]);[g1,g2,g3][i].connect(gm);});
-  gm.connect(comp);comp.connect(ctx.destination);
-  o1.start(now);o1.stop(now+2);o2.start(now);o2.stop(now+1.3);o3.start(now);o3.stop(now+.5);
-}
+// ═══════════════════════════════════════════════
+//  4. AUDIO
+// ═══════════════════════════════════════════════
+let audioCtx = null;
 
-// ══════════════════════════════════════════════════════
-//  NOTE BADGE
-// ══════════════════════════════════════════════════════
-const badge = document.getElementById('badge');
-let bt;
-function showNote(n,c){
-  badge.textContent=n;badge.style.color=c;
-  badge.style.borderColor=c;
-  badge.style.boxShadow=`0 0 22px ${c}88,inset 0 0 12px ${c}22`;
-  badge.style.textShadow=`0 0 16px ${c}`;
-  badge.style.background=c+'18';
-  badge.classList.remove('show');void badge.offsetWidth;badge.classList.add('show');
-  clearTimeout(bt);bt=setTimeout(()=>badge.classList.remove('show'),900);
-}
-
-// ══════════════════════════════════════════════════════
-//  TRIGGER / RELEASE
-// ══════════════════════════════════════════════════════
-const active = new Set();
-
-function trigger(letter){
-  const e=keyMap[letter];if(!e||active.has(letter))return;
-  active.add(letter);
-  const{el,f,n,c,type}=e;
-  el.classList.add('active');
-  if(type==='white'){
-    el.style.background=`linear-gradient(180deg,${c}cc,${c}88 55%,${c}44)`;
-    el.style.boxShadow=`inset 0 2px 5px rgba(0,0,0,.2),0 0 28px ${c}99,0 0 60px ${c}44`;
-  } else {
-    el.style.background=`linear-gradient(180deg,${c}ee,${c}aa 65%,${c}66)`;
-    el.style.boxShadow=`inset 0 2px 4px rgba(0,0,0,.4),0 0 22px ${c}bb,0 0 50px ${c}55`;
+function getAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
-  el.querySelector('.kb').style.color='rgba(5,0,20,0.85)';
-  el.querySelector('.nn').style.color='rgba(5,0,20,0.6)';
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playNote(freq) {
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+
+  const o1 = ctx.createOscillator();
+  const o2 = ctx.createOscillator();
+  const o3 = ctx.createOscillator();
+  o1.type = 'triangle'; o2.type = 'sine'; o3.type = 'sine';
+  o1.frequency.setValueAtTime(freq, now);
+  o2.frequency.setValueAtTime(freq * 2, now);
+  o3.frequency.setValueAtTime(freq * 3.01, now);
+
+  const g1 = ctx.createGain(), g2 = ctx.createGain(),
+        g3 = ctx.createGain(), gm = ctx.createGain();
+
+  g1.gain.setValueAtTime(0, now);
+  g1.gain.linearRampToValueAtTime(0.5, now + 0.006);
+  g1.gain.exponentialRampToValueAtTime(0.13, now + 0.3);
+  g1.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+
+  g2.gain.setValueAtTime(0, now);
+  g2.gain.linearRampToValueAtTime(0.18, now + 0.006);
+  g2.gain.exponentialRampToValueAtTime(0.03, now + 0.25);
+  g2.gain.exponentialRampToValueAtTime(0.001, now + 1.3);
+
+  g3.gain.setValueAtTime(0, now);
+  g3.gain.linearRampToValueAtTime(0.07, now + 0.006);
+  g3.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+  gm.gain.setValueAtTime(0.65, now);
+
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -18; comp.knee.value = 10; comp.ratio.value = 4;
+
+  o1.connect(g1); g1.connect(gm);
+  o2.connect(g2); g2.connect(gm);
+  o3.connect(g3); g3.connect(gm);
+  gm.connect(comp); comp.connect(ctx.destination);
+
+  o1.start(now); o1.stop(now + 2.0);
+  o2.start(now); o2.stop(now + 1.3);
+  o3.start(now); o3.stop(now + 0.5);
+}
+
+// ═══════════════════════════════════════════════
+//  5. PIANO DATA
+// ═══════════════════════════════════════════════
+const WHITE_KEYS = [
+  {k:'A', n:'C4',  f:261.63},
+  {k:'S', n:'D4',  f:293.66},
+  {k:'D', n:'E4',  f:329.63},
+  {k:'F', n:'F4',  f:349.23},
+  {k:'G', n:'G4',  f:392.00},
+  {k:'H', n:'A4',  f:440.00},
+  {k:'J', n:'B4',  f:493.88},
+  {k:'K', n:'C5',  f:523.25},
+  {k:'L', n:'D5',  f:587.33},
+  {k:'Z', n:'E5',  f:659.25},
+  {k:'X', n:'F5',  f:698.46},
+  {k:'C', n:'G5',  f:783.99},
+  {k:'V', n:'A5',  f:880.00},
+  {k:'B', n:'B5',  f:987.77},
+  {k:'N', n:'C6',  f:1046.50},
+  {k:'M', n:'D6',  f:1174.66},
+];
+
+const BLACK_KEYS = [
+  {k:'Q', n:'C#4', f:277.18, after:0},
+  {k:'W', n:'D#4', f:311.13, after:1},
+  {k:'E', n:'F#4', f:369.99, after:3},
+  {k:'R', n:'G#4', f:415.30, after:4},
+  {k:'T', n:'A#4', f:466.16, after:5},
+  {k:'Y', n:'D#5', f:622.25, after:9},
+  {k:'U', n:'F#5', f:739.99, after:10},
+  {k:'I', n:'G#5', f:830.61, after:12},
+  {k:'O', n:'A#5', f:932.33, after:13},
+  {k:'P', n:'C#6', f:1108.73,after:14},
+];
+
+const COLORS = {
+  A:'#ff2dff', S:'#d500f9', D:'#7c4dff', F:'#00b0ff', G:'#00e5ff',
+  H:'#00ff9f', J:'#76ff03', K:'#ffe600', L:'#ff9100', Z:'#ff3d00',
+  X:'#ff1744', C:'#f50057', V:'#e040fb', B:'#40c4ff', N:'#18ffff', M:'#69ff47',
+  Q:'#ff6ec7', W:'#ff9cee', E:'#b388ff', R:'#82b1ff', T:'#80d8ff',
+  Y:'#a7ffeb', U:'#ccff90', I:'#ffd180', O:'#ff9e80', P:'#ea80fc',
+};
+
+// ═══════════════════════════════════════════════
+//  6. BUILD PIANO  (responsive, called on load + resize)
+// ═══════════════════════════════════════════════
+const pianoEl  = document.getElementById('piano');
+const keyMap   = {}; // letter → { el, f, n, c, type }
+const active   = new Set();
+
+function buildPiano() {
+  // Clear old state
+  pianoEl.innerHTML = '';
+  Object.keys(keyMap).forEach(k => delete keyMap[k]);
+  active.clear();
+
+  // Calculate key sizes to fit screen
+  const availW = window.innerWidth - 28; // 14px shell padding each side
+  let ww = Math.floor(availW / WHITE_KEYS.length);
+  ww = Math.max(20, Math.min(48, ww));
+  const wh  = Math.round(ww * 4.0);
+  const bw  = Math.round(ww * 0.60);
+  const bh  = Math.round(wh * 0.62);
+  const kfz = Math.max(7, Math.min(13, ww * 0.28)) + 'px';
+  const nfz = Math.max(6, Math.min(10, ww * 0.20)) + 'px';
+
+  pianoEl.style.width  = (ww * WHITE_KEYS.length) + 'px';
+  pianoEl.style.height = wh + 'px';
+
+  // White keys
+  WHITE_KEYS.forEach(({ k, n, f }) => {
+    const el = document.createElement('div');
+    el.className = 'wkey';
+    el.style.width  = ww + 'px';
+    el.style.height = wh + 'px';
+    el.innerHTML = `<span class="nn" style="font-size:${nfz}">${n}</span>
+                    <span class="kb" style="font-size:${kfz}">${k}</span>`;
+    pianoEl.appendChild(el);
+    keyMap[k] = { el, f, n, c: COLORS[k], type: 'white' };
+  });
+
+  // Black keys
+  BLACK_KEYS.forEach(({ k, n, f, after }) => {
+    const el = document.createElement('div');
+    el.className = 'bkey';
+    el.style.width  = bw + 'px';
+    el.style.height = bh + 'px';
+    el.style.left   = (after * ww + ww - bw / 2) + 'px';
+    el.innerHTML = `<span class="nn" style="font-size:${Math.max(5,parseInt(nfz)-1)+'px'}">${n}</span>
+                    <span class="kb" style="font-size:${Math.max(6,parseInt(kfz)-1)+'px'}">${k}</span>`;
+    pianoEl.appendChild(el);
+    keyMap[k] = { el, f, n, c: COLORS[k], type: 'black' };
+  });
+}
+
+buildPiano();
+
+// ═══════════════════════════════════════════════
+//  7. NOTE BADGE
+// ═══════════════════════════════════════════════
+const badge = document.getElementById('badge');
+let badgeTimer;
+
+function showBadge(note, color) {
+  badge.textContent = note;
+  badge.style.color        = color;
+  badge.style.borderColor  = color;
+  badge.style.background   = color + '20';
+  badge.style.boxShadow    = `0 0 24px ${color}88, inset 0 0 12px ${color}22`;
+  badge.style.textShadow   = `0 0 16px ${color}`;
+  badge.classList.remove('show');
+  void badge.offsetWidth;          // force reflow to restart animation
+  badge.classList.add('show');
+  clearTimeout(badgeTimer);
+  badgeTimer = setTimeout(() => badge.classList.remove('show'), 900);
+}
+
+// ═══════════════════════════════════════════════
+//  8. TRIGGER / RELEASE
+// ═══════════════════════════════════════════════
+function trigger(letter) {
+  const e = keyMap[letter];
+  if (!e || active.has(letter)) return;
+  active.add(letter);
+
+  const { el, f, n, c, type } = e;
+
+  // Visual glow
+  if (type === 'white') {
+    el.style.background = `linear-gradient(180deg, ${c}cc, ${c}88 55%, ${c}44)`;
+    el.style.boxShadow  = `inset 0 2px 5px rgba(0,0,0,.2), 0 0 28px ${c}99, 0 0 60px ${c}44`;
+  } else {
+    el.style.background = `linear-gradient(180deg, ${c}ee, ${c}aa 65%, ${c}66)`;
+    el.style.boxShadow  = `inset 0 2px 4px rgba(0,0,0,.4), 0 0 22px ${c}bb, 0 0 50px ${c}55`;
+  }
+  el.querySelectorAll('span').forEach(s => s.style.color = 'rgba(5,0,20,0.85)');
+  el.classList.add(type === 'white' ? 'on' : 'on');
+
   playNote(f);
-  showNote(n,c);
-  const rect=el.getBoundingClientRect();
-  spawnFX(rect.left+rect.width/2, rect.top+rect.height*.28, c, letter);
+  showBadge(n, c);
+
+  const rect = el.getBoundingClientRect();
+  spawnFX(rect.left + rect.width / 2, rect.top + rect.height * 0.28, c, letter);
 }
 
-function release(letter){
-  const e=keyMap[letter];if(!e)return;
+function release(letter) {
+  const e = keyMap[letter];
+  if (!e) return;
   active.delete(letter);
-  const{el}=e;
-  el.classList.remove('active');
-  el.style.background='';el.style.boxShadow='';
-  el.querySelectorAll('span').forEach(s=>s.style.color='');
+  e.el.classList.remove('on');
+  e.el.style.background = '';
+  e.el.style.boxShadow  = '';
+  e.el.querySelectorAll('span').forEach(s => s.style.color = '');
 }
 
-// ══════════════════════════════════════════════════════
-//  KEYBOARD EVENTS
-// ══════════════════════════════════════════════════════
-document.addEventListener('keydown',e=>{if(!e.repeat)trigger(e.key.toUpperCase());});
-document.addEventListener('keyup',  e=>release(e.key.toUpperCase()));
+// ═══════════════════════════════════════════════
+//  9. KEYBOARD EVENTS
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.repeat) return;
+  trigger(e.key.toUpperCase());
+});
+document.addEventListener('keyup', e => {
+  release(e.key.toUpperCase());
+});
 
-// ══════════════════════════════════════════════════════
-//  MULTI-TOUCH SUPPORT
-//  Map touch identifiers → key letters for proper multi-touch
-// ══════════════════════════════════════════════════════
-const touchMap = {}; // touchId → letter
+// ═══════════════════════════════════════════════
+//  10. MOUSE EVENTS  (desktop click)
+// ═══════════════════════════════════════════════
+pianoEl.addEventListener('mousedown', e => {
+  const key = e.target.closest('.wkey, .bkey');
+  if (key) { e.preventDefault(); trigger(key.querySelector('.kb').textContent); }
+});
+pianoEl.addEventListener('mouseup', e => {
+  const key = e.target.closest('.wkey, .bkey');
+  if (key) release(key.querySelector('.kb').textContent);
+});
+pianoEl.addEventListener('mouseleave', () => {
+  active.forEach(l => release(l));
+});
 
-document.addEventListener('touchstart', e=>{
-  [...e.changedTouches].forEach(t=>{
-    const el = document.elementFromPoint(t.clientX,t.clientY);
-    if(el){
-      const key = el.closest('[data-key]');
-      if(key){
-        const lt = key.dataset.key;
-        touchMap[t.identifier] = lt;
-        trigger(lt);
-      }
+// ═══════════════════════════════════════════════
+//  11. TOUCH EVENTS  (mobile — using event delegation)
+// ═══════════════════════════════════════════════
+const touchTrack = {}; // touchId → letter
+
+pianoEl.addEventListener('touchstart', e => {
+  e.preventDefault();
+  Array.from(e.changedTouches).forEach(touch => {
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const key = el && el.closest('.wkey, .bkey');
+    if (key) {
+      const letter = key.querySelector('.kb').textContent;
+      touchTrack[touch.identifier] = letter;
+      trigger(letter);
     }
   });
-},{passive:false});
+}, { passive: false });
 
-document.addEventListener('touchend', e=>{
-  [...e.changedTouches].forEach(t=>{
-    const lt = touchMap[t.identifier];
-    if(lt){ release(lt); delete touchMap[t.identifier]; }
+pianoEl.addEventListener('touchmove', e => {
+  e.preventDefault();
+  Array.from(e.changedTouches).forEach(touch => {
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const key = el && el.closest('.wkey, .bkey');
+    const newLetter = key ? key.querySelector('.kb').textContent : null;
+    const oldLetter = touchTrack[touch.identifier];
+    if (newLetter !== oldLetter) {
+      if (oldLetter) release(oldLetter);
+      if (newLetter) { touchTrack[touch.identifier] = newLetter; trigger(newLetter); }
+    }
   });
-},{passive:false});
+}, { passive: false });
 
-document.addEventListener('touchcancel', e=>{
-  [...e.changedTouches].forEach(t=>{
-    const lt = touchMap[t.identifier];
-    if(lt){ release(lt); delete touchMap[t.identifier]; }
+pianoEl.addEventListener('touchend', e => {
+  e.preventDefault();
+  Array.from(e.changedTouches).forEach(touch => {
+    const letter = touchTrack[touch.identifier];
+    if (letter) { release(letter); delete touchTrack[touch.identifier]; }
   });
-},{passive:false});
+}, { passive: false });
+
+pianoEl.addEventListener('touchcancel', e => {
+  Array.from(e.changedTouches).forEach(touch => {
+    const letter = touchTrack[touch.identifier];
+    if (letter) { release(letter); delete touchTrack[touch.identifier]; }
+  });
+});
 </script>
 </body>
 </html>
